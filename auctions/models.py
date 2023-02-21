@@ -17,7 +17,8 @@ class Listing(models.Model):
     startingBid = models.IntegerField()
     currentBid = models.IntegerField(null = True, blank = True)
     imageURL = models.URLField(max_length = 500, null = True, blank = True)
-    Category = models.ForeignKey(Category, on_delete = models.CASCADE, related_name = "listings", null = True, blank = True)
+    category = models.ForeignKey(Category, on_delete = models.CASCADE, related_name = "listings", null = True, blank = True)
+    owner = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "listings")
 
     def __str__(self):
         return f"{self.id}: {self.title} - {self.startingBid}$ - {self.currentBid}"
