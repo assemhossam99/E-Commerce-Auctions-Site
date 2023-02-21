@@ -5,20 +5,30 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Listing, Category, Comment, Bid
-
+from django import forms
 from .models import User
 
+class NewListingForm(forms.Form):
+    title = forms.CharField(label = "title")
+    description = forms.CharField(label = "title")
+    startingBid = forms.IntegerField(label = "startingBid", min_value = 1)
+    image = forms.CharField(required = False, label = "image")
+    categoryList = [(category.pk, category) for category in Category.objects.all()]
+    category = forms.ChoiceField(required = False, choices = ( [('', '')] + [(category.pk, category) for category in Category.objects.all()]))
 
 def index(request):
     if request.method == "POST":
-        title = request.POST["title"]
-        description = request.POST["description"]
-        startingBid = request.POST["startingBid"]
-        image = request.POST["imageURL"]
-        category = None
-        if request.POST["category"] != "":
-            category = Category.objects.get(name = request.POST["category"])
-        user = request.user
+        form = NewListingForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            startingBid = form.cleaned_data["startingBid"]
+            image = form.cleaned_data["image"]
+            category = None
+            if form.cleaned_data["category"] != '':
+                tmp = form.cleaned_data["category"]
+                category = Category.objects.get(id = form.cleaned_data["category"])
+            user = request.user
         listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, imageURL = image, category = category, owner = user)
     return render(request, "auctions/index.html")
 
@@ -82,5 +92,5 @@ def newListing(request):
         })
     else:
         return render(request, "auctions/newListing.html", {
-            "categories": Category.objects.all()
+            "form": NewListingForm()
         })
