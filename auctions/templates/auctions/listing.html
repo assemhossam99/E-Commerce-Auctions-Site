@@ -1,5 +1,35 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    
+    <div>
+        <h1>Listing: {{listing.title}}</h1>
+        <img src={{listing.imageURL}} />
+        <div>{{listing.description}}</div>
+        <h1>
+            {% if listing.currentBid %}
+                {{listing.currentBid}} $
+            {% else %}
+                {{listing.startingBid}} $
+            {% endif %}
+        </h1>
+        {% if user %}
+        <form action="{% url 'listing' listing.id %}", method="post">
+            {%csrf_token%}
+            {% if on_watchlist == False %}
+            <input type="submit" value="Add to Watchlist">
+            {% elif on_watchlist == True %}
+            <input type="submit" value="Remove From Watchlist" name="watchlist">
+            {% endif %}
+        </form>
+        {{user.username}}
+        <form action="{% url 'listing' listing.id %}", method="post">
+            {%csrf_token%}
+            {%if value != None%}
+                <input name = "newBid" type="number" placeholder="Enter new Bid">
+                <input type="submit" value="Enter the new Bid" name="bid">
+            {%endif%}
+        </form>
+        <div>{{message}}</div>
+        {% endif %}
+    </div>
 {% endblock %}

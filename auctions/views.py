@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Listing, Category, Comment, Bid
+from .models import Listing, Category, Comment, Bid, WatchList
 from django import forms
 from .models import User
 
@@ -48,7 +48,7 @@ def index(request):
                 tmp = form.cleaned_data["category"]
                 category = Category.objects.get(id = form.cleaned_data["category"])
             user = request.user
-        listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, imageURL = image, category = category, owner = user)
+        listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, currentBid = startingBid, imageURL = image, category = category, owner = user)
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()
     })
@@ -117,4 +117,47 @@ def newListing(request):
         })
 
 def listing(request, listing_id):
-    return render(request, "auctions\listing.html")
+    value = None
+    if request.user.is_authenticated:
+        on_watchlist = None
+        message = None 
+        value = 0
+        if WatchList.objects.filter(user = request.user.id, listing = listing_id).count() == 0:
+            on_watchlist = False
+        else:
+            on_watchlist = True
+        if request.method == "POST":
+            
+            if 'bid'in request.POST:
+                value = request.POST["newBid"]
+                currentListing = Listing.objects.get(id = listing_id)
+                if value == '':
+                    message = "please don't enter empty bid."
+                elif int(value) > currentListing.currentBid:
+                    bid = Bid(value = value, listing = Listing.objects.get(id = listing_id), user = request.user)
+                    bid.save()
+                    currentListing.currentBid = value
+                    currentListing.save()
+                    message = "Successfully added your bid."
+                else:
+                    message = "Can't add your Bid because it's lower than the last bid."
+            else:
+                if on_watchlist == False:
+                    WatchList.objects.create(user = request.user, listing = Listing.objects.get(id = listing_id))
+                    on_watchlist = True
+                    message = "Added to your watchlist."
+                else:
+                    WatchList.objects.get(user = request.user.id, listing = listing_id).delete()
+                    on_watchlist = False
+                    message = "Removed from your watchlist."
+        
+        return render(request, "auctions\listing.html", {
+            "listing": Listing.objects.get(pk=listing_id),
+            "user" : request.user,
+            "on_watchlist": on_watchlist,
+            "value": value,
+            "message": message
+        })
+    return render(request, "auctions\listing.html", {
+        "listing": Listing.objects.get(pk=listing_id),
+    })

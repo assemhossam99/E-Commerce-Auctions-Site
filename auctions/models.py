@@ -38,3 +38,10 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"Bid {self.id} on Listing {self.listing.id}: {self.value}"
+
+class WatchList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="watchlist")
+
+    def __str__(self):
+        return f"Listing {self.listing.id} on user {self.user.id} watchlist"

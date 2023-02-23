@@ -10,6 +10,13 @@ body {
     margin-top: 20px;
 }
 
+.listingItem:after{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
 .listingImage{
     margin: 10px;
     height: 200px;
@@ -18,10 +25,20 @@ body {
     float: left;
 }
 
+img{
+    height: 30%;
+    width: 30%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .listingText{
     font-size: larger;
     margin: 10px;   
     color: black;
+    float: left;
+    width: 70%;
 }
 
 .listingTitle{
@@ -75,4 +92,8 @@ a:active {
     font-size: large;
     font-weight: bold;
     padding: 20px;
+}
+
+.imageFrame{
+    float: right;
 }
