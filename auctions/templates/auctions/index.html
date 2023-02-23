@@ -2,8 +2,23 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    <div> {{test}}</div>
-    <a href = "{% url 'newListing' %}">
-        Add new Listing
-    </a>
+    {% for listing in listings %}
+        <div class="listingItem">
+            <a href="{% url 'listing' listing.id %}" class="listingTextLink">
+                {% if listing.imageURL %}
+                    <img src = {{listing.imageURL}} class="listingImage"/>
+                {% else %}
+                    <img src = https://img.freepik.com/premium-vector/abstract-modern-ecommerce-logo-design-colorful-gradient-shopping-bag-logo-template_467913-995.jpg?w=740 class="listingImage"/>
+                {% endif %}
+                <span class = "listingText">
+                    <div class="listingTitle">{{listing.title}}</div>
+                    <div>{{listing.description}}</div>
+                    <div>Starting Bid: {{listing.startingBid}}$</div>
+                    <div>Category: {{listing.category.name}}</div>
+                    <div>Last Bid Price: {{listing.currentBid}}</div>
+                </span>
+            </a>
+        </div>
+    {% endfor %}
+    <a href = "{% url 'newListing' %}" class="newListingLink">Add new Listing</a>
 {% endblock %}

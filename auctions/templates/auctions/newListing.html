@@ -3,7 +3,9 @@
 {% block body %}
     <form action = "{% url 'index' %}", method="post">
         {%csrf_token%}
-        {{form}}
-        <input type="submit">
+        <div class="djangoForm">
+            {{form}}
+            <input type="submit" class="button" value="Add Listing">
+        </div>
     </form>
 {% endblock %}

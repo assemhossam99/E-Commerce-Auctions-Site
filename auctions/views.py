@@ -9,12 +9,31 @@ from django import forms
 from .models import User
 
 class NewListingForm(forms.Form):
-    title = forms.CharField(label = "title")
-    description = forms.CharField(label = "title")
-    startingBid = forms.IntegerField(label = "startingBid", min_value = 1)
-    image = forms.CharField(required = False, label = "image")
+    title = forms.CharField(label = "Title:", widget=forms.TextInput(attrs={
+        'placeholder': 'Title', 
+        'style': 'width: 300px;', 
+        'class': 'form-control'
+        }))
+    description = forms.CharField(label = "Description", widget=forms.Textarea(attrs={
+        'placeholder': 'Description', 
+        'style': 'width: 500px;', 
+        'class': 'form-control'
+        }))
+    startingBid = forms.IntegerField(label = "Starting Bid", min_value = 1, widget=forms.NumberInput(attrs={
+        'style': 'width: 100px;', 
+        'class': 'form-control'
+        }))
+    image = forms.CharField(required = False, label = "image", widget=forms.TextInput(attrs={
+        'placeholder': 'Image URL', 
+        'style': 'width: 300px;', 
+        'class': 'form-control'
+        }))
     categoryList = [(category.pk, category) for category in Category.objects.all()]
-    category = forms.ChoiceField(required = False, choices = ( [('', '')] + [(category.pk, category) for category in Category.objects.all()]))
+    category = forms.ChoiceField(required = False, choices = ( [('', '')] + [(category.pk, category) for category in Category.objects.all()]), widget=forms.Select(attrs={
+        'placeholder': 'Description', 
+        'style': 'width: 300px;', 
+        'class': 'form-control'
+        }))
 
 def index(request):
     if request.method == "POST":
@@ -30,7 +49,9 @@ def index(request):
                 category = Category.objects.get(id = form.cleaned_data["category"])
             user = request.user
         listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, imageURL = image, category = category, owner = user)
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.all()
+    })
 
 
 def login_view(request):
@@ -94,3 +115,6 @@ def newListing(request):
         return render(request, "auctions/newListing.html", {
             "form": NewListingForm()
         })
+
+def listing(request, listing_id):
+    return render(request, "auctions\listing.html")
