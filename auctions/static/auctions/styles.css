@@ -2,6 +2,7 @@ body {
     padding: 10px;
 }
 
+
 .listingItem{
     background-color: rgb(231, 231, 231);
     margin: 10px;
@@ -15,7 +16,6 @@ body {
     display: table;
     clear: both;
 }
-
 
 .listingImage{
     margin: 10px;

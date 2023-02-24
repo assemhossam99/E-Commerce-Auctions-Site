@@ -182,3 +182,20 @@ def listing(request, listing_id):
         "user": user,
         "comments": Comment.objects.filter(listing = Listing.objects.get(id=listing_id))
     })
+
+def watchlist(request, user_id):
+    watchlist = WatchList.objects.filter(user=request.user.id)
+    return render(request, "auctions\watchlist.html", {
+        "watchlist" : watchlist,
+        "listSize" : watchlist.count()
+    })
+
+def categories(request):
+    return render(request, "auctions\categories.html",{
+        "categories": Category.objects.all()
+    })
+
+def category(request, category_id):
+    return render(request, "auctions\category.html", {
+        "listings" : Listing.objects.filter(category=Category.objects.get(id=category_id))
+    })

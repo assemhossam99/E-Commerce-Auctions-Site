@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {%for item in watchlist%}
+    <div class="listingItem">
+        <a href="{% url 'listing' item.listing.id %}" class="listingTextLink">
+            <diV class="imageFrame">
+                {% if listing.imageURL %}
+                <img src = {{item.listing.imageURL}} class="listingImage"/>
+                {% else %}
+                    <img src = https://img.freepik.com/premium-vector/abstract-modern-ecommerce-logo-design-colorful-gradient-shopping-bag-logo-template_467913-995.jpg?w=740 class="listingImage"/>
+                    {% endif %}
+                </div>
+                <span class = "listingText">
+                    <div class="listingTitle">{{item.listing.title}}</div>
+                    <div>{{item.listing.description}}</div>
+                    <div>Starting Bid: {{item.listing.startingBid}}$</div>
+                    <div>Category: {{item.listing.category.name}}</div>
+                    <div>Last Bid Price: {{item.listing.currentBid}}</div>
+                </span>
+            </a>
+        </div>
+    {%empty%}
+        <div class="message">There is no items in your watchlist</div>
+    {% endfor %}
+{% endblock %}
