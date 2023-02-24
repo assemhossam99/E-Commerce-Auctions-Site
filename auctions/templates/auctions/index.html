@@ -2,7 +2,6 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    <a href = "{% url 'newListing' %}" class="newListingLink">Add new Listing</a>
     {% for listing in listings %}
         <div class="listingItem">
             <a href="{% url 'listing' listing.id %}" class="listingTextLink">
@@ -22,6 +21,7 @@
                 </span>
             </a>
         </div>
+    {%empty%}
+        <div class="message">There is no Listings right now</div>
     {% endfor %}
-    <a href = "{% url 'newListing' %}" class="newListingLink">Add new Listing</a>
 {% endblock %}

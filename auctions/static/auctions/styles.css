@@ -62,16 +62,6 @@ a:active {
     text-decoration: none; 
 }
 
-.newListingLink{
-    margin-left: 50%;
-    margin-top: 20%;
-    padding: 10px;   
-    color: wheat;
-    background-color: rgb(0, 0, 0);
-    font-weight: bold;
-    font-size: larger;
-}
-
 .newListingLink:hover{
     color: wheat;
 }
@@ -157,4 +147,19 @@ a:active {
     border-color: black;
     border-width: 1px;
     padding: 10px;
+}
+
+.category{
+    border-style: solid;
+    border-width: 2px;
+    color: black;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    list-style: none;
+    background-color: lightgray;
+    font-size: larger;
+    font-weight: bold;
 }
