@@ -97,3 +97,64 @@ a:active {
 .imageFrame{
     float: right;
 }
+
+.submitButton{
+    background-color: black;
+    color: white;
+    padding: 10px;
+}
+
+.usernameComment{
+    font-size: large;
+    font-weight: bold;
+    width: 100%;
+}
+
+.comment{
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(185, 185, 185);
+    padding: 5px;
+    margin: 10px;
+}
+
+.commentValue{
+    background-color: rgb(46, 46, 46);
+    width: 100%;
+    padding: 5px;
+    padding-left: 30px;
+    color: white;
+}
+
+
+.listingForms{
+    padding: 10px;
+    margin: center;
+}
+
+.message{
+    width: 100%;
+    color: red;
+    border-style: solid;
+    border-color: black;
+    background-color: lightgray;
+    padding: 20px;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.commentsSection{
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 5px;
+    background-color: rgb(232, 232, 232);
+}
+
+.itemSection{
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 10px;
+}

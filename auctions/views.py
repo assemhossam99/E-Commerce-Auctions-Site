@@ -4,9 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Listing, Category, Comment, Bid, WatchList
+from .models import Listing, Category, Comment, Bid, WatchList, User
 from django import forms
-from .models import User
 
 class NewListingForm(forms.Form):
     title = forms.CharField(label = "Title:", widget=forms.TextInput(attrs={
@@ -37,18 +36,23 @@ class NewListingForm(forms.Form):
 
 def index(request):
     if request.method == "POST":
-        form = NewListingForm(request.POST)
-        if form.is_valid():
-            title = form.cleaned_data["title"]
-            description = form.cleaned_data["description"]
-            startingBid = form.cleaned_data["startingBid"]
-            image = form.cleaned_data["image"]
-            category = None
-            if form.cleaned_data["category"] != '':
-                tmp = form.cleaned_data["category"]
-                category = Category.objects.get(id = form.cleaned_data["category"])
-            user = request.user
-        listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, currentBid = startingBid, imageURL = image, category = category, owner = user)
+        if 'closeBid' in request.POST:
+            winner = request.POST["winner"]
+            listing_id = request.POST["listing_id"]
+            Listing.objects.get(id = listing_id).delete()
+        else:
+            form = NewListingForm(request.POST)
+            if form.is_valid():
+                title = form.cleaned_data["title"]
+                description = form.cleaned_data["description"]
+                startingBid = form.cleaned_data["startingBid"]
+                image = form.cleaned_data["image"]
+                category = None
+                if form.cleaned_data["category"] != '':
+                    tmp = form.cleaned_data["category"]
+                    category = Category.objects.get(id = form.cleaned_data["category"])
+                user = request.user
+            listing = Listing.objects.create(title = title, description = description, startingBid = startingBid, currentBid = startingBid, imageURL = image, category = category, owner = user)
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()
     })
@@ -117,18 +121,31 @@ def newListing(request):
         })
 
 def listing(request, listing_id):
-    value = None
+    user = None
     if request.user.is_authenticated:
+        user = request.user
         on_watchlist = None
+        value = None
+        listingOwner = False
         message = None 
+        winner = None
         value = 0
         if WatchList.objects.filter(user = request.user.id, listing = listing_id).count() == 0:
             on_watchlist = False
         else:
             on_watchlist = True
+        
+        listing = Listing.objects.get(id = listing_id)
+        if listing.owner == user:
+            listingOwner = True
+            if Bid.objects.filter(value=listing.currentBid, listing=listing).count() != 0:
+                winner = Bid.objects.get(value=listing.currentBid, listing=listing).user
+
         if request.method == "POST":
-            
-            if 'bid'in request.POST:
+            if 'newComment' in request.POST:
+                comment = Comment(commentContent = request.POST["comment"], listing = Listing.objects.get(id=listing.id), user = request.user)
+                comment.save()
+            elif 'bid'in request.POST:
                 value = request.POST["newBid"]
                 currentListing = Listing.objects.get(id = listing_id)
                 if value == '':
@@ -150,14 +167,18 @@ def listing(request, listing_id):
                     WatchList.objects.get(user = request.user.id, listing = listing_id).delete()
                     on_watchlist = False
                     message = "Removed from your watchlist."
-        
         return render(request, "auctions\listing.html", {
             "listing": Listing.objects.get(pk=listing_id),
-            "user" : request.user,
+            "user" : user,
             "on_watchlist": on_watchlist,
             "value": value,
-            "message": message
+            "message": message,
+            "owner": listingOwner,
+            "winner": winner,
+            "comments": Comment.objects.filter(listing = Listing.objects.get(id=listing_id))
         })
     return render(request, "auctions\listing.html", {
         "listing": Listing.objects.get(pk=listing_id),
+        "user": user,
+        "comments": Comment.objects.filter(listing = Listing.objects.get(id=listing_id))
     })

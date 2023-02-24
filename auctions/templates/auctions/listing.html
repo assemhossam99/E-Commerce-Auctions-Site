@@ -1,35 +1,70 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div>
-        <h1>Listing: {{listing.title}}</h1>
-        <img src={{listing.imageURL}} />
-        <div>{{listing.description}}</div>
-        <h1>
-            {% if listing.currentBid %}
-                {{listing.currentBid}} $
-            {% else %}
-                {{listing.startingBid}} $
-            {% endif %}
-        </h1>
-        {% if user %}
-        <form action="{% url 'listing' listing.id %}", method="post">
-            {%csrf_token%}
-            {% if on_watchlist == False %}
-            <input type="submit" value="Add to Watchlist">
-            {% elif on_watchlist == True %}
-            <input type="submit" value="Remove From Watchlist" name="watchlist">
-            {% endif %}
-        </form>
-        {{user.username}}
-        <form action="{% url 'listing' listing.id %}", method="post">
-            {%csrf_token%}
-            {%if value != None%}
-                <input name = "newBid" type="number" placeholder="Enter new Bid">
-                <input type="submit" value="Enter the new Bid" name="bid">
-            {%endif%}
-        </form>
-        <div>{{message}}</div>
+<div>
+    {%if message%}
+        <div class="message">{{message}}</div>
+    {%endif%}
+    {%if user != None%}
+        {% if owner%}
+            <form action = "{% url 'index' %}" method="post" class="listingForms">
+                {%csrf_token%}
+                <input type="hidden" value="{{winner}}" name="winner">
+                <input type="hidden" value="{{listing.id}}" name = listing_id>
+                <input type="submit" value="Close The Bid" name="closeBid" class="submitButton">
+            </form>
         {% endif %}
+    {%endif%}
+    <div class="itemSection">
+            <h1>Listing: {{listing.title}}</h1>
+            {% if listing.imageURL %}
+            <img src = {{listing.imageURL}} />
+                {% else %}
+                    <img src = https://img.freepik.com/premium-vector/abstract-modern-ecommerce-logo-design-colorful-gradient-shopping-bag-logo-template_467913-995.jpg?w=740 />
+                {% endif %}
+                <div>{{listing.description}}</div>
+                <h1>
+                    {% if listing.currentBid %}
+                        {{listing.currentBid}} $
+                    {% else %}
+                        {{listing.startingBid}} $
+                    {% endif %}
+                </h1>
     </div>
+        {% if user != None%}
+            <form action="{% url 'listing' listing.id %}", method="post" class="listingForms">
+                {%csrf_token%}
+                {% if on_watchlist == False %}
+                    <input type="submit" value="Add to Watchlist" class="submitButton">
+                {% elif on_watchlist == True %}
+                    <input type="submit" value="Remove From Watchlist" name="watchlist" class="submitButton">
+                {% endif %}
+            </form>
+
+            <form action="{% url 'listing' listing.id %}", method="post" class="listingForms">
+                {%csrf_token%}
+                <input name = "newBid" type="number" placeholder="Enter new Bid">
+                <input type="submit" value="Enter the new Bid" name="bid" class="submitButton">
+            </form>
+
+            
+            {% endif %}
+            <div class="commentsSection">
+                <h2>Commnets:</h2>
+                {% for comment in comments %}
+                    <div class="comment">
+                        <span class="usernameComment">{{comment.user.username}}</span>
+                        <br>
+                        <div class="commentValue">{{comment.commentContent}}</div>
+                    </div>
+                {%endfor%}
+                {%if user != None%}
+                    <form action="{% url 'listing' listing.id %}" method="post" class="listingForms">
+                        {%csrf_token%}
+                        <input type="text" placeholder="Write a Comment" name="comment">
+                        <input type="submit" value="Add Comment" name="newComment" class="submitButton">
+                    </form>
+                {%endif%}
+            </div>
+</div>
 {% endblock %}
